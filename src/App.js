@@ -188,7 +188,10 @@ const drawRect = (detections, ctx) =>{
 
     // Extract boxes and classes
     const [x, y, width, height] = prediction['bbox']; 
-    const text = prediction['class']; 
+    const text = prediction['class'];
+
+    if(text == "person")
+      text = "Niezła sztunia 🤠";
 
     // Set styling
     const color = Math.floor(Math.random()*16777215).toString(16);

@@ -181,7 +181,6 @@ import * as tf from "@tensorflow/tfjs";
 import * as cocossd from "@tensorflow-models/coco-ssd";
 import Webcam from "react-webcam";
 import "./App.css";
-import { drawRect } from "./utilities";
 
 const drawRect = (detections, ctx) =>{
   // Loop through each prediction
@@ -208,6 +207,22 @@ const drawRect = (detections, ctx) =>{
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+
+  const [deviceId, setDeviceId] = React.useState({});
+  const [devices, setDevices] = React.useState([]);
+
+  const handleDevices = React.useCallback(
+    mediaDevices =>
+      setDevices(mediaDevices.filter(({ kind }) => kind === "videoinput")),
+    [setDevices]
+  );
+
+  React.useEffect(
+    () => {
+      navigator.mediaDevices.enumerateDevices().then(handleDevices);
+    },
+    [handleDevices]
+  );
 
   // Main function
   const runCoco = async () => {
@@ -268,6 +283,16 @@ function App() {
             height: 480,
           }}
         />
+
+        <div>
+          {devices.map((device, key) => (
+            <div>
+              <Webcam audio={false} videoConstraints={{ deviceId: device.deviceId }} />
+              {device.label || `Device ${key + 1}`}
+            </div>
+
+          ))}
+        </div>
 
         <canvas
           ref={canvasRef}
